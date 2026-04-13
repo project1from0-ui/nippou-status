@@ -272,6 +272,69 @@ a:hover { text-decoration: underline; }
   margin: 2px 4px 2px 0;
 }
 .tagline { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+.cmd-list { list-style: none; padding: 0; margin: 0; }
+.cmd-list li {
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.cmd-list li:last-child { border-bottom: none; }
+.cmd-category {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  color: var(--text);
+}
+.cmd-desc {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  line-height: 1.45;
+}
+.copy-cmd {
+  display: block;
+  background: var(--subtle-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 70px 10px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  cursor: pointer;
+  word-break: break-all;
+  position: relative;
+  transition: background 0.15s;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  color: var(--text);
+}
+.copy-cmd:hover { background: var(--border); }
+.copy-cmd::after {
+  content: "タップでコピー";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--card);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+}
+.copy-cmd.copied::after {
+  content: "✓ コピー済み";
+  color: #fff;
+  background: var(--ok);
+  border-color: transparent;
+}
+.cmd-sub-header {
+  margin: 12px 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
 </style>
 </head>
 <body>
@@ -348,6 +411,30 @@ function escapeHtml(s) {
   if (s == null) return "";
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 }
+
+function copyCmd(el) {
+  const text = el.dataset.cmd || el.textContent.trim();
+  const done = () => {
+    el.classList.add("copied");
+    setTimeout(() => el.classList.remove("copied"), 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); done(); } catch (_) {}
+  document.body.removeChild(ta);
+}
+window.copyCmd = copyCmd;
 
 function renderStatus(data) {
   const history = (data.history || []).slice().sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -467,7 +554,23 @@ function renderSystem(sys) {
       <div class="desc">${escapeHtml(s.purpose || '')}</div>
     </li>`).join("");
 
-  const panelHtml = (panel.subcommands || []).map(s => `<span class="chip">./nippou ${escapeHtml(s.name)}</span>`).join("");
+  const subCmds = panel.subcommands || [];
+  const examples = panel.examples || [];
+  const oneOffs = sys.one_off_commands || [];
+
+  const subCmdsHtml = subCmds.map(s => `
+    <li>
+      <div class="cmd-category">${escapeHtml(s.name)}</div>
+      <div class="cmd-desc">${escapeHtml(s.description || "")}</div>
+      <code class="copy-cmd" data-cmd="${escapeHtml(s.command)}" onclick="copyCmd(this)">${escapeHtml(s.command)}</code>
+    </li>`).join("");
+
+  const oneOffsHtml = oneOffs.map(o => `
+    <li>
+      <div class="cmd-category">${escapeHtml(o.category)}</div>
+      <div class="cmd-desc">${escapeHtml(o.description || "")}</div>
+      <code class="copy-cmd" data-cmd="${escapeHtml(o.command)}" onclick="copyCmd(this)">${escapeHtml(o.command)}</code>
+    </li>`).join("");
 
   return `
     <h2 style="margin-top:24px;">システム詳細 (自動同期)</h2>
@@ -499,11 +602,14 @@ function renderSystem(sys) {
       <summary>シークレット (${secrets.length})</summary>
       <ul class="file-list">${secretsHtml}</ul>
     </details>
-    <details class="card">
-      <summary>ターミナル制御</summary>
+    <details class="card" open>
+      <summary>コマンド集（タップでコピー）</summary>
       <div class="subtle">${escapeHtml(panel.description || '')}</div>
-      <div style="margin:8px 0;">${escapeHtml(panel.location || '')}</div>
-      ${panelHtml}
+      <div style="margin:8px 0; font-family: ui-monospace, monospace; font-size: 12px; color: var(--muted);">場所: ${escapeHtml(panel.location || '')}</div>
+      <div class="cmd-sub-header">./nippou サブコマンド (${subCmds.length})</div>
+      <ul class="cmd-list">${subCmdsHtml}</ul>
+      <div class="cmd-sub-header">単発コマンド (${oneOffs.length})</div>
+      <ul class="cmd-list">${oneOffsHtml}</ul>
     </details>
     <details class="card">
       <summary>最近のコミット (${commits.length})</summary>
