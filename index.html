@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Nippou Automation Status</title>
+<style>
+:root {
+  --bg: #f7f7f9;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --ok: #16a34a;
+  --skip: #9ca3af;
+  --err: #dc2626;
+  --accent: #2563eb;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --card: #171a21;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --border: #252932;
+    --ok: #22c55e;
+    --skip: #6b7280;
+    --err: #ef4444;
+    --accent: #60a5fa;
+  }
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+h1 {
+  font-size: 20px;
+  margin: 0 0 16px;
+  letter-spacing: 0.02em;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+}
+.badge.ok { background: var(--ok); }
+.badge.skip { background: var(--skip); }
+.badge.err { background: var(--err); }
+.meta {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+.big {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 6px 0;
+}
+.subtle {
+  color: var(--muted);
+  font-size: 13px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+.day {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.day.ok { background: var(--ok); color: #fff; border-color: transparent; }
+.day.skip { background: var(--skip); color: #fff; border-color: transparent; opacity: 0.6; }
+.day.err { background: var(--err); color: #fff; border-color: transparent; }
+.day.future { opacity: 0.25; }
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.history-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  gap: 12px;
+}
+.history-list li:last-child { border-bottom: none; }
+.history-list .date { font-variant-numeric: tabular-nums; }
+.history-list .reason {
+  color: var(--muted);
+  font-size: 12px;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.dot.ok { background: var(--ok); }
+.dot.skip { background: var(--skip); }
+.dot.err { background: var(--err); }
+footer {
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+a { color: var(--accent); text-decoration: none; }
+.loading { text-align: center; color: var(--muted); padding: 24px; }
+.err-msg { color: var(--err); padding: 16px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📋 Nippou Automation Status</h1>
+  <div id="content">
+    <div class="loading">読み込み中…</div>
+  </div>
+</div>
+<script>
+const STATUS_URL = "./status.json?t=" + Date.now();
+
+function fmtDate(iso, tz = "Asia/Tokyo") {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat("ja-JP", {
+    timeZone: tz,
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit",
+    hour12: false,
+  }).format(d);
+}
+
+function shortDate(iso) {
+  return iso.slice(5).replace("-", "/");
+}
+
+function badgeFor(status) {
+  if (status === "success") return `<span class="badge ok">成功</span>`;
+  if (status === "skipped") return `<span class="badge skip">スキップ</span>`;
+  return `<span class="badge err">失敗</span>`;
+}
+
+function dotFor(status) {
+  if (status === "success") return `<span class="dot ok"></span>`;
+  if (status === "skipped") return `<span class="dot skip"></span>`;
+  return `<span class="dot err"></span>`;
+}
+
+function calcStreak(history) {
+  let streak = 0;
+  for (const entry of history) {
+    if (entry.status === "success") streak++;
+    else if (entry.status === "skipped") continue;
+    else break;
+  }
+  return streak;
+}
+
+function computeCalendar(history) {
+  // Build a 30-day calendar grid from today backwards
+  const map = new Map();
+  for (const e of history) {
+    map.set(e.date, e.status);
+  }
+  const today = new Date();
+  const tzJst = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" });
+  const parts = tzJst.formatToParts(today);
+  const y = parts.find(p => p.type === "year").value;
+  const m = parts.find(p => p.type === "month").value;
+  const d = parts.find(p => p.type === "day").value;
+  const todayJst = new Date(`${y}-${m}-${d}T00:00:00+09:00`);
+
+  const cells = [];
+  for (let i = 29; i >= 0; i--) {
+    const dt = new Date(todayJst.getTime() - i * 86400000);
+    const dateStr = tzJst.format(dt);
+    const status = map.get(dateStr);
+    cells.push({ date: dateStr, status });
+  }
+  return cells;
+}
+
+async function load() {
+  const el = document.getElementById("content");
+  let data;
+  try {
+    const res = await fetch(STATUS_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    data = await res.json();
+  } catch (e) {
+    el.innerHTML = `<div class="err-msg">ステータスの取得に失敗しました: ${e.message}</div>`;
+    return;
+  }
+
+  const history = (data.history || []).slice().sort((a, b) => (a.date < b.date ? 1 : -1));
+  const last = data.last_run || history[0] || null;
+  const streak = calcStreak(history);
+  const calendar = computeCalendar(history);
+
+  const lastBadge = last ? badgeFor(last.status) : `<span class="badge skip">データなし</span>`;
+  const lastTime = last && last.timestamp ? fmtDate(last.timestamp) : "—";
+  const lastReason = last && last.reason ? `<div class="meta">${last.reason}</div>` : "";
+
+  let html = `
+    <div class="card">
+      <div class="headline">
+        <div>
+          <div class="subtle">最終実行</div>
+          <div class="big">${lastTime}</div>
+          ${lastBadge}
+          ${lastReason}
+        </div>
+        <div style="text-align: right;">
+          <div class="subtle">連続成功</div>
+          <div class="big">${streak}<span class="subtle" style="font-size:14px;"> 日</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="subtle">直近30日</div>
+      <div class="grid">
+        ${calendar.map(c => {
+          const cls = c.status ? c.status : "future";
+          const label = shortDate(c.date);
+          return `<div class="day ${cls}" title="${c.date}${c.status ? ': ' + c.status : ''}">${label}</div>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="subtle">履歴</div>
+      <ul class="history-list">
+        ${history.length === 0 ? '<li><span class="reason">まだ実行履歴がありません</span></li>' :
+          history.slice(0, 30).map(h => `
+            <li>
+              <span class="date">${dotFor(h.status)}${h.date}</span>
+              <span class="reason">${h.reason || (h.status === "success" ? "投稿完了" : h.status)}</span>
+            </li>
+          `).join("")}
+      </ul>
+    </div>
+  `;
+  el.innerHTML = html;
+}
+
+load();
+setInterval(load, 60000);
+</script>
+<footer>
+  最後の更新: <span id="now"></span>
+  <script>
+    document.getElementById("now").textContent = new Intl.DateTimeFormat("ja-JP",
+      { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit" }).format(new Date());
+  </script>
+</footer>
+</body>
+</html>
