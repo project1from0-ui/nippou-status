@@ -1,16 +1,4 @@
 {
-  "last_run": {
-    "date": "2026-04-26",
-    "status": "skipped",
-    "reason": "授業なし",
-    "timestamp": "2026-04-13T11:40:31+09:00"
-  },
-  "history": [
-    {
-      "date": "2026-04-26",
-      "status": "skipped",
-      "reason": "授業なし",
-      "timestamp": "2026-04-13T11:40:31+09:00"
-    }
-  ]
+  "last_run": null,
+  "history": []
 }
