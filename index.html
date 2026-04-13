@@ -11,6 +11,7 @@
   --card: #ffffff;
   --text: #1a1a1a;
   --muted: #6b7280;
+  --subtle-bg: #f3f4f6;
   --border: #e5e7eb;
   --ok: #16a34a;
   --skip: #9ca3af;
@@ -23,6 +24,7 @@
     --card: #171a21;
     --text: #f3f4f6;
     --muted: #9ca3af;
+    --subtle-bg: #1f232c;
     --border: #252932;
     --ok: #22c55e;
     --skip: #6b7280;
@@ -40,7 +42,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 .wrap {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 24px 16px 80px;
 }
@@ -49,6 +51,13 @@ h1 {
   margin: 0 0 16px;
   letter-spacing: 0.02em;
 }
+h2 {
+  font-size: 14px;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -56,6 +65,23 @@ h1 {
   padding: 16px;
   margin-bottom: 16px;
 }
+details.card > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary::after {
+  content: "▾";
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+details.card[open] > summary::after { transform: rotate(180deg); }
+details.card[open] > summary { margin-bottom: 12px; }
 .headline {
   display: flex;
   align-items: baseline;
@@ -107,9 +133,9 @@ h1 {
   border: 1px solid var(--border);
   color: var(--muted);
 }
-.day.ok { background: var(--ok); color: #fff; border-color: transparent; }
-.day.skip { background: var(--skip); color: #fff; border-color: transparent; opacity: 0.6; }
-.day.err { background: var(--err); color: #fff; border-color: transparent; }
+.day.success, .day.ok { background: var(--ok); color: #fff; border-color: transparent; }
+.day.skipped, .day.skip { background: var(--skip); color: #fff; border-color: transparent; opacity: 0.6; }
+.day.failure, .day.err { background: var(--err); color: #fff; border-color: transparent; }
 .day.future { opacity: 0.25; }
 .history-list {
   list-style: none;
@@ -139,9 +165,9 @@ h1 {
   margin-right: 8px;
   vertical-align: middle;
 }
-.dot.ok { background: var(--ok); }
-.dot.skip { background: var(--skip); }
-.dot.err { background: var(--err); }
+.dot.success { background: var(--ok); }
+.dot.skipped { background: var(--skip); }
+.dot.failure { background: var(--err); }
 footer {
   margin-top: 24px;
   color: var(--muted);
@@ -149,19 +175,118 @@ footer {
   text-align: center;
 }
 a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 .loading { text-align: center; color: var(--muted); padding: 24px; }
 .err-msg { color: var(--err); padding: 16px; text-align: center; }
+.kv {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 8px 12px;
+  font-size: 13px;
+  margin: 8px 0;
+}
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; word-break: break-all; }
+.flow-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: step;
+}
+.flow-list li {
+  position: relative;
+  padding: 8px 0 8px 34px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-bottom: 1px dashed var(--border);
+}
+.flow-list li:last-child { border-bottom: none; }
+.flow-list li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.file-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 13px;
+}
+.file-list li:last-child { border-bottom: none; }
+.file-list .path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  font-size: 12px;
+}
+.file-list .desc {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 1.5;
+}
+.file-list .size {
+  color: var(--muted);
+  font-size: 11px;
+  float: right;
+}
+.commit-list { list-style: none; padding: 0; margin: 0; }
+.commit-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 12px;
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+}
+.commit-list li:last-child { border-bottom: none; }
+.commit-list .sha {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--accent);
+}
+.commit-list .msg { word-break: break-word; }
+.commit-list .when { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: var(--subtle-bg);
+  color: var(--muted);
+  margin: 2px 4px 2px 0;
+}
+.tagline { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>📋 Nippou Automation Status</h1>
-  <div id="content">
+  <div id="tagline" class="tagline"></div>
+  <div id="status-area">
     <div class="loading">読み込み中…</div>
   </div>
+  <div id="system-area"></div>
 </div>
+
 <script>
 const STATUS_URL = "./status.json?t=" + Date.now();
+const SYSTEM_URL = "./system.json?t=" + Date.now();
 
 function fmtDate(iso, tz = "Asia/Tokyo") {
   const d = new Date(iso);
@@ -181,13 +306,12 @@ function shortDate(iso) {
 function badgeFor(status) {
   if (status === "success") return `<span class="badge ok">成功</span>`;
   if (status === "skipped") return `<span class="badge skip">スキップ</span>`;
-  return `<span class="badge err">失敗</span>`;
+  if (status === "failure") return `<span class="badge err">失敗</span>`;
+  return `<span class="badge skip">データなし</span>`;
 }
 
 function dotFor(status) {
-  if (status === "success") return `<span class="dot ok"></span>`;
-  if (status === "skipped") return `<span class="dot skip"></span>`;
-  return `<span class="dot err"></span>`;
+  return `<span class="dot ${status}"></span>`;
 }
 
 function calcStreak(history) {
@@ -201,11 +325,8 @@ function calcStreak(history) {
 }
 
 function computeCalendar(history) {
-  // Build a 30-day calendar grid from today backwards
   const map = new Map();
-  for (const e of history) {
-    map.set(e.date, e.status);
-  }
+  for (const e of history) map.set(e.date, e.status);
   const today = new Date();
   const tzJst = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" });
   const parts = tzJst.formatToParts(today);
@@ -213,7 +334,6 @@ function computeCalendar(history) {
   const m = parts.find(p => p.type === "month").value;
   const d = parts.find(p => p.type === "day").value;
   const todayJst = new Date(`${y}-${m}-${d}T00:00:00+09:00`);
-
   const cells = [];
   for (let i = 29; i >= 0; i--) {
     const dt = new Date(todayJst.getTime() - i * 86400000);
@@ -224,28 +344,22 @@ function computeCalendar(history) {
   return cells;
 }
 
-async function load() {
-  const el = document.getElementById("content");
-  let data;
-  try {
-    const res = await fetch(STATUS_URL, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    data = await res.json();
-  } catch (e) {
-    el.innerHTML = `<div class="err-msg">ステータスの取得に失敗しました: ${e.message}</div>`;
-    return;
-  }
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
 
+function renderStatus(data) {
   const history = (data.history || []).slice().sort((a, b) => (a.date < b.date ? 1 : -1));
   const last = data.last_run || history[0] || null;
   const streak = calcStreak(history);
   const calendar = computeCalendar(history);
 
-  const lastBadge = last ? badgeFor(last.status) : `<span class="badge skip">データなし</span>`;
+  const lastBadge = last ? badgeFor(last.status) : badgeFor(null);
   const lastTime = last && last.timestamp ? fmtDate(last.timestamp) : "—";
-  const lastReason = last && last.reason ? `<div class="meta">${last.reason}</div>` : "";
+  const lastReason = last && last.reason ? `<div class="meta">${escapeHtml(last.reason)}</div>` : "";
 
-  let html = `
+  return `
     <div class="card">
       <div class="headline">
         <div>
@@ -265,9 +379,8 @@ async function load() {
       <div class="subtle">直近30日</div>
       <div class="grid">
         ${calendar.map(c => {
-          const cls = c.status ? c.status : "future";
-          const label = shortDate(c.date);
-          return `<div class="day ${cls}" title="${c.date}${c.status ? ': ' + c.status : ''}">${label}</div>`;
+          const cls = c.status || "future";
+          return `<div class="day ${cls}" title="${c.date}${c.status ? ': ' + c.status : ''}">${shortDate(c.date)}</div>`;
         }).join("")}
       </div>
     </div>
@@ -279,22 +392,164 @@ async function load() {
           history.slice(0, 30).map(h => `
             <li>
               <span class="date">${dotFor(h.status)}${h.date}</span>
-              <span class="reason">${h.reason || (h.status === "success" ? "投稿完了" : h.status)}</span>
+              <span class="reason">${escapeHtml(h.reason || h.status || "")}</span>
             </li>
           `).join("")}
       </ul>
     </div>
   `;
-  el.innerHTML = html;
+}
+
+function renderSystem(sys) {
+  if (!sys) return "";
+  const arch = sys.architecture || {};
+  const sched = sys.schedule || {};
+  const target = sys.target || {};
+  const files = sys.scripts || [];
+  const commits = sys.recent_commits || [];
+  const flow = sys.data_flow || [];
+  const secrets = sys.secrets || [];
+  const wfs = sys.workflows || [];
+  const panel = sys.control_panel || {};
+  const git = sys.git || {};
+
+  const archHtml = `
+    <dl class="kv">
+      <dt>Private repo</dt>
+      <dd><a href="${escapeHtml(arch.private_repo?.url || '#')}" target="_blank">${escapeHtml(arch.private_repo?.name || '')}</a><div class="subtle">${escapeHtml(arch.private_repo?.role || '')}</div></dd>
+      <dt>Public repo</dt>
+      <dd><a href="${escapeHtml(arch.public_repo?.url || '#')}" target="_blank">${escapeHtml(arch.public_repo?.name || '')}</a><div class="subtle">${escapeHtml(arch.public_repo?.role || '')}</div></dd>
+      <dt>Dashboard</dt>
+      <dd><a href="${escapeHtml(arch.public_repo?.pages_url || '#')}">${escapeHtml(arch.public_repo?.pages_url || '')}</a></dd>
+    </dl>`;
+
+  const targetHtml = `
+    <dl class="kv">
+      <dt>対象学生</dt><dd><strong>${escapeHtml(target.student_name || '')}</strong></dd>
+      <dt>フォーム</dt><dd>${escapeHtml(target.form_title || '')}</dd>
+      <dt>URL</dt><dd style="font-size:11px;"><a href="${escapeHtml(target.form_url || '#')}" target="_blank">${escapeHtml((target.form_url || '').slice(0, 80))}…</a></dd>
+      <dt>安全装置</dt><dd class="subtle">${escapeHtml(target.safety || '')}</dd>
+    </dl>`;
+
+  const schedHtml = `
+    <dl class="kv">
+      <dt>cron</dt><dd><code>${escapeHtml(sched.cron || '')}</code></dd>
+      <dt>実行時刻</dt><dd>${escapeHtml(sched.description || '')}</dd>
+      <dt>ジッター</dt><dd>${escapeHtml(sched.jitter || '')}</dd>
+      <dt>実効範囲</dt><dd>${escapeHtml(sched.effective_window || '')}</dd>
+    </dl>`;
+
+  const filesHtml = files.map(f => `
+    <li>
+      <span class="size">${f.lines}行 / ${Math.round((f.size_bytes || 0)/102.4)/10}KB</span>
+      <div class="path">${escapeHtml(f.path)}</div>
+      <div class="desc">${escapeHtml(f.description || '')}</div>
+    </li>`).join("");
+
+  const wfHtml = wfs.map(w => `
+    <li>
+      <div class="path">${escapeHtml(w.file)}</div>
+      <div class="desc">${escapeHtml(w.name)} ${(w.triggers || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>
+    </li>`).join("");
+
+  const commitsHtml = commits.map(c => `
+    <li>
+      <span class="sha">${escapeHtml(c.sha)}</span>
+      <span class="msg">${escapeHtml(c.message)}</span>
+      <span class="when">${fmtDate(c.date)}</span>
+    </li>`).join("");
+
+  const flowHtml = flow.map(step => `<li>${escapeHtml(step)}</li>`).join("");
+
+  const secretsHtml = secrets.map(s => `
+    <li>
+      <div class="path">${escapeHtml(s.name)}</div>
+      <div class="desc">${escapeHtml(s.purpose || '')}</div>
+    </li>`).join("");
+
+  const panelHtml = (panel.subcommands || []).map(s => `<span class="chip">./nippou ${escapeHtml(s.name)}</span>`).join("");
+
+  return `
+    <h2 style="margin-top:24px;">システム詳細 (自動同期)</h2>
+    <details class="card" open>
+      <summary>アーキテクチャ</summary>
+      ${archHtml}
+    </details>
+    <details class="card">
+      <summary>対象・安全装置</summary>
+      ${targetHtml}
+    </details>
+    <details class="card">
+      <summary>スケジュール</summary>
+      ${schedHtml}
+    </details>
+    <details class="card">
+      <summary>データフロー（1日の流れ）</summary>
+      <ol class="flow-list">${flowHtml}</ol>
+    </details>
+    <details class="card">
+      <summary>スクリプト (${files.length})</summary>
+      <ul class="file-list">${filesHtml}</ul>
+    </details>
+    <details class="card">
+      <summary>ワークフロー (${wfs.length})</summary>
+      <ul class="file-list">${wfHtml}</ul>
+    </details>
+    <details class="card">
+      <summary>シークレット (${secrets.length})</summary>
+      <ul class="file-list">${secretsHtml}</ul>
+    </details>
+    <details class="card">
+      <summary>ターミナル制御</summary>
+      <div class="subtle">${escapeHtml(panel.description || '')}</div>
+      <div style="margin:8px 0;">${escapeHtml(panel.location || '')}</div>
+      ${panelHtml}
+    </details>
+    <details class="card">
+      <summary>最近のコミット (${commits.length})</summary>
+      <ul class="commit-list">${commitsHtml}</ul>
+      <div class="subtle" style="margin-top:8px;">HEAD: <code>${escapeHtml(git.head_sha || '')}</code> on <code>${escapeHtml(git.current_branch || '')}</code></div>
+    </details>
+  `;
+}
+
+async function load() {
+  const statusArea = document.getElementById("status-area");
+  const systemArea = document.getElementById("system-area");
+  const tagline = document.getElementById("tagline");
+
+  // Status (required)
+  let status;
+  try {
+    const res = await fetch(STATUS_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    status = await res.json();
+  } catch (e) {
+    statusArea.innerHTML = `<div class="err-msg">status.json読み込み失敗: ${escapeHtml(e.message)}</div>`;
+    return;
+  }
+  statusArea.innerHTML = renderStatus(status);
+
+  // System (optional — may not exist yet)
+  try {
+    const res = await fetch(SYSTEM_URL, { cache: "no-store" });
+    if (res.ok) {
+      const sys = await res.json();
+      if (sys.tagline) tagline.textContent = sys.tagline;
+      systemArea.innerHTML = renderSystem(sys);
+    }
+  } catch (e) {
+    // system.json optional; silently ignore
+  }
 }
 
 load();
-setInterval(load, 60000);
+setInterval(load, 120000);
 </script>
 <footer>
-  最後の更新: <span id="now"></span>
+  <span id="now"></span>
   <script>
-    document.getElementById("now").textContent = new Intl.DateTimeFormat("ja-JP",
+    document.getElementById("now").textContent = "最後の更新: " + new Intl.DateTimeFormat("ja-JP",
       { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit" }).format(new Date());
   </script>
 </footer>
