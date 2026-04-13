@@ -1,0 +1,190 @@
+{
+  "updated_at": "2026-04-13T02:50:52+00:00",
+  "title": "Nippou Automation",
+  "tagline": "中尾 竜也 の座学日報を毎日22時台に自動投稿する完全クラウド型自動化",
+  "architecture": {
+    "private_repo": {
+      "name": "project1from0-ui/nippou-automation",
+      "role": "コード・ワークフロー・シークレット格納（private）",
+      "url": "https://github.com/project1from0-ui/nippou-automation"
+    },
+    "public_repo": {
+      "name": "project1from0-ui/nippou-status",
+      "role": "ステータス/システム詳細ダッシュボード（public）",
+      "url": "https://github.com/project1from0-ui/nippou-status",
+      "pages_url": "https://project1from0-ui.github.io/nippou-status/"
+    }
+  },
+  "target": {
+    "student_name": "中尾 竜也",
+    "form_url": "https://script.google.com/a/macros/sawadadojo.com/s/AKfycbxIL8hg-NiDEryqSETr-qMTDNUWFVuNEW6h2c9bb-b8JYO0z5KtV15xwwoe6FirklRtnA/exec",
+    "form_title": "12期生 座学日報",
+    "safety": "学生名はハードコード＆2段階assert。他生徒には絶対投稿しない。"
+  },
+  "schedule": {
+    "cron": "0 13 * * *",
+    "timezone": "UTC",
+    "jst_time": "22:00",
+    "description": "毎日 22:00 JST (UTC 13:00)",
+    "jitter": "0〜55分 のランダム遅延",
+    "effective_window": "22:00〜22:55 JST ほど"
+  },
+  "workflows": [
+    {
+      "file": ".github/workflows/daily.yml",
+      "name": "Submit daily nippou",
+      "triggers": [
+        "schedule",
+        "manual"
+      ]
+    },
+    {
+      "file": ".github/workflows/sync-system.yml",
+      "name": "Sync system metadata to dashboard",
+      "triggers": [
+        "manual",
+        "push"
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "path": "scripts/extract_storage_state.py",
+      "size_bytes": 1677,
+      "lines": 50,
+      "description": "Export the cookies/localStorage from the persistent profile to storage_state.json, which can be uploaded as a GitHub Actions secret to replay the login in CI."
+    },
+    {
+      "path": "scripts/gen_system_json.py",
+      "size_bytes": 9869,
+      "lines": 266,
+      "description": "Generate a rich metadata snapshot of the nippou-automation system."
+    },
+    {
+      "path": "scripts/generator.py",
+      "size_bytes": 8342,
+      "lines": 272,
+      "description": "Combinatorial short-text generator for daily report entries."
+    },
+    {
+      "path": "scripts/grab_form.py",
+      "size_bytes": 4955,
+      "lines": 115,
+      "description": "Reuse the persistent login state to navigate to the nippou form URL, then save the rendered HTML and a full-page screenshot for analysis."
+    },
+    {
+      "path": "scripts/login.py",
+      "size_bytes": 2283,
+      "lines": 71,
+      "description": "Launch Chromium with a persistent context and navigate to the nippou form URL. The user logs in manually; when done, they close the browser window. The login state is persisted to .browser-profile/ for reuse by other scripts."
+    },
+    {
+      "path": "scripts/submit.py",
+      "size_bytes": 13378,
+      "lines": 355,
+      "description": "Main daily-report submission script."
+    },
+    {
+      "path": "nippou",
+      "size_bytes": 3616,
+      "lines": 108,
+      "description": "Terminal control panel (status / test / stop / start / refresh / logs)"
+    }
+  ],
+  "secrets": [
+    {
+      "name": "PUSH_TOKEN",
+      "purpose": "nippou-statusへのクロスリポpush用GitHubトークン。"
+    },
+    {
+      "name": "STORAGE_STATE_B64",
+      "purpose": "Googleセッションcookie。毎日自動で延命＆上書き更新。"
+    }
+  ],
+  "data_flow": [
+    "22:00 JST (cron 13:00 UTC) GHAワークフロー起動",
+    "0〜55分のランダム遅延（人間っぽさのため）",
+    "STORAGE_STATE_B64 を storage_state.json に復元",
+    "submit.py がPlaywrightでフォームを開き、中尾 竜也を名前検索で選択",
+    "appData.schedule[今日] を取得。授業なしまたは既存日報ありならskip",
+    "generator.py がテンプレ×語彙の組み合わせで短文生成 (history.jsonで重複回避)",
+    "google.script.run.saveReport() で直接送信",
+    "context.close()前に storage_state.json を最新cookieで上書き",
+    "workflow が base64化して STORAGE_STATE_B64 secret を自動更新 → セッション延命",
+    "run_status.json を nippou-status/status.json にマージpush → ダッシュボード反映",
+    "main への push があれば sync-system.yml が system.json を再生成 → ダッシュボードに即反映"
+  ],
+  "control_panel": {
+    "location": "~/nippou_automation/nippou",
+    "subcommands": [
+      {
+        "name": "status"
+      },
+      {
+        "name": "logs"
+      },
+      {
+        "name": "last"
+      },
+      {
+        "name": "test"
+      },
+      {
+        "name": "stop"
+      },
+      {
+        "name": "start"
+      },
+      {
+        "name": "refresh"
+      },
+      {
+        "name": "open"
+      }
+    ],
+    "description": "ターミナルから直接操作したい時だけ使う。通常は使わなくて良い。"
+  },
+  "recent_commits": [
+    {
+      "sha": "de7f1ff",
+      "message": "feat: auto-sync system metadata to public dashboard",
+      "date": "2026-04-13T11:50:43+09:00",
+      "author": "project1from0-ui"
+    },
+    {
+      "sha": "60ed70a",
+      "message": "feat: auto-refresh STORAGE_STATE_B64 on every successful run",
+      "date": "2026-04-13T11:39:19+09:00",
+      "author": "project1from0-ui"
+    },
+    {
+      "sha": "3df728c",
+      "message": "feat: push run status to public dashboard repo",
+      "date": "2026-04-13T11:28:02+09:00",
+      "author": "project1from0-ui"
+    },
+    {
+      "sha": "667da3a",
+      "message": "feat: add ./nippou terminal control panel",
+      "date": "2026-04-13T11:11:21+09:00",
+      "author": "project1from0-ui"
+    },
+    {
+      "sha": "107a7a8",
+      "message": "fix: commit history only when success AND not dry-run",
+      "date": "2026-04-13T10:51:38+09:00",
+      "author": "project1from0-ui"
+    },
+    {
+      "sha": "33105f9",
+      "message": "Initial commit: nippou automation scaffolding",
+      "date": "2026-04-13T10:43:00+09:00",
+      "author": "project1from0-ui"
+    }
+  ],
+  "git": {
+    "current_branch": "main",
+    "head_sha": "de7f1ff",
+    "head_date": "2026-04-13T11:50:43+09:00"
+  }
+}
