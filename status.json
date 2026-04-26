@@ -1,11 +1,17 @@
 {
   "last_run": {
-    "date": "2026-04-25",
-    "status": "success",
-    "reason": "投稿完了",
-    "timestamp": "2026-04-25T21:24:43+09:00"
+    "date": "2026-04-26",
+    "status": "skipped",
+    "reason": "授業なし",
+    "timestamp": "2026-04-26T20:45:17+09:00"
   },
   "history": [
+    {
+      "date": "2026-04-26",
+      "status": "skipped",
+      "reason": "授業なし",
+      "timestamp": "2026-04-26T20:45:17+09:00"
+    },
     {
       "date": "2026-04-25",
       "status": "success",
