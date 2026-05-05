@@ -1,11 +1,17 @@
 {
   "last_run": {
-    "date": "2026-05-04",
+    "date": "2026-05-05",
     "status": "failure",
     "reason": "exit code 3",
-    "timestamp": "2026-05-04T21:31:17+09:00"
+    "timestamp": "2026-05-05T21:22:32+09:00"
   },
   "history": [
+    {
+      "date": "2026-05-05",
+      "status": "failure",
+      "reason": "exit code 3",
+      "timestamp": "2026-05-05T21:22:32+09:00"
+    },
     {
       "date": "2026-05-04",
       "status": "failure",
