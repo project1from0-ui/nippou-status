@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-12T15:29:51+00:00",
+  "updated_at": "2026-05-12T17:14:25+00:00",
   "title": "Nippou Automation",
   "tagline": "中尾 竜也 の座学日報を毎日20時台に自動投稿。Mac常駐ガーディアンがGoogleセッションを延命し、失敗は通知＋メールで即知らせる多層構成。",
   "architecture": {
@@ -81,8 +81,8 @@
     },
     {
       "path": "scripts/submit.py",
-      "size_bytes": 17104,
-      "lines": 427,
+      "size_bytes": 17793,
+      "lines": 443,
       "description": "Main daily-report submission script."
     },
     {
@@ -254,6 +254,12 @@
   ],
   "recent_commits": [
     {
+      "sha": "c493b7b",
+      "message": "fix: skip 休み (rest) days instead of fabricating a reflection",
+      "date": "2026-05-13T02:14:12+09:00",
+      "author": "project1from0-ui"
+    },
+    {
       "sha": "9409783",
       "message": "feat: harden daily-report automation against session-expiry (multi-layer)",
       "date": "2026-05-13T00:29:31+09:00",
@@ -366,17 +372,11 @@
       "message": "feat: 3-line subjective writing + --force + myReports timing fix",
       "date": "2026-04-13T12:19:34+09:00",
       "author": "project1from0-ui"
-    },
-    {
-      "sha": "f1b6ce4",
-      "message": "data: seed history.json with backfilled 4/6-4/11 entries",
-      "date": "2026-04-13T12:02:16+09:00",
-      "author": "project1from0-ui"
     }
   ],
   "git": {
     "current_branch": "main",
-    "head_sha": "9409783",
-    "head_date": "2026-05-13T00:29:31+09:00"
+    "head_sha": "c493b7b",
+    "head_date": "2026-05-13T02:14:12+09:00"
   }
 }
