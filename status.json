@@ -1,16 +1,16 @@
 {
   "last_run": {
     "date": "2026-05-12",
-    "status": "failure",
-    "reason": "exit code 3",
-    "timestamp": "2026-05-12T22:30:39+09:00"
+    "status": "skipped",
+    "reason": "既に日報あり",
+    "timestamp": "2026-05-12T23:14:19+09:00"
   },
   "history": [
     {
       "date": "2026-05-12",
-      "status": "failure",
-      "reason": "exit code 3",
-      "timestamp": "2026-05-12T22:30:39+09:00"
+      "status": "skipped",
+      "reason": "既に日報あり",
+      "timestamp": "2026-05-12T23:14:19+09:00"
     },
     {
       "date": "2026-05-11",
