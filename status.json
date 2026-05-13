@@ -1,11 +1,17 @@
 {
   "last_run": {
-    "date": "2026-05-12",
-    "status": "skipped",
-    "reason": "既に日報あり",
-    "timestamp": "2026-05-12T23:14:19+09:00"
+    "date": "2026-05-13",
+    "status": "success",
+    "reason": "投稿完了",
+    "timestamp": "2026-05-13T23:00:20+09:00"
   },
   "history": [
+    {
+      "date": "2026-05-13",
+      "status": "success",
+      "reason": "投稿完了",
+      "timestamp": "2026-05-13T23:00:20+09:00"
+    },
     {
       "date": "2026-05-12",
       "status": "skipped",
