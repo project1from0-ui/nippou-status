@@ -1,11 +1,17 @@
 {
   "last_run": {
-    "date": "2026-05-27",
+    "date": "2026-05-28",
     "status": "success",
-    "reason": "投稿完了（5/28 にローカルから手動バックフィル）",
-    "timestamp": "2026-05-28T10:56:01+09:00"
+    "reason": "投稿完了",
+    "timestamp": "2026-05-29T00:00:31+09:00"
   },
   "history": [
+    {
+      "date": "2026-05-28",
+      "status": "success",
+      "reason": "投稿完了",
+      "timestamp": "2026-05-29T00:00:31+09:00"
+    },
     {
       "date": "2026-05-27",
       "status": "success",
