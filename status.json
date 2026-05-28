@@ -1,22 +1,22 @@
 {
   "last_run": {
     "date": "2026-05-27",
-    "status": "failure",
-    "reason": "🔑 Googleセッション切れ — ローカルで `cd ~/Desktop/澤田_日報自動化 && ./nippou refresh` を実行して再ログインしてください",
-    "timestamp": "2026-05-28T00:15:36+09:00"
+    "status": "success",
+    "reason": "投稿完了（5/28 にローカルから手動バックフィル）",
+    "timestamp": "2026-05-28T10:56:01+09:00"
   },
   "history": [
     {
       "date": "2026-05-27",
-      "status": "failure",
-      "reason": "🔑 Googleセッション切れ — ローカルで `cd ~/Desktop/澤田_日報自動化 && ./nippou refresh` を実行して再ログインしてください",
-      "timestamp": "2026-05-28T00:15:36+09:00"
+      "status": "success",
+      "reason": "投稿完了（5/28 にローカルから手動バックフィル）",
+      "timestamp": "2026-05-28T10:56:01+09:00"
     },
     {
       "date": "2026-05-26",
-      "status": "failure",
-      "reason": "🔑 Googleセッション切れ — ローカルで `cd ~/Desktop/澤田_日報自動化 && ./nippou refresh` を実行して再ログインしてください",
-      "timestamp": "2026-05-26T23:05:04+09:00"
+      "status": "success",
+      "reason": "投稿完了（5/28 にローカルから手動バックフィル）",
+      "timestamp": "2026-05-28T10:55:41+09:00"
     },
     {
       "date": "2026-05-25",
