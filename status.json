@@ -1,16 +1,16 @@
 {
   "last_run": {
     "date": "2026-06-04",
-    "status": "success",
-    "reason": "投稿完了 (+1日分補完: 2026-06-03)",
-    "timestamp": "2026-06-04T01:36:45+09:00"
+    "status": "skipped",
+    "reason": "既に日報あり",
+    "timestamp": "2026-06-04T23:32:07+09:00"
   },
   "history": [
     {
       "date": "2026-06-04",
-      "status": "success",
-      "reason": "投稿完了 (+1日分補完: 2026-06-03)",
-      "timestamp": "2026-06-04T01:36:45+09:00"
+      "status": "skipped",
+      "reason": "既に日報あり",
+      "timestamp": "2026-06-04T23:32:07+09:00"
     },
     {
       "date": "2026-06-02",
