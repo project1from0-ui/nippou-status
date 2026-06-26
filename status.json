@@ -1,11 +1,17 @@
 {
   "last_run": {
-    "date": "2026-06-25",
+    "date": "2026-06-26",
     "status": "failure",
     "reason": "🔑 Googleセッション切れ — ローカルで `cd ~/Desktop/澤田_日報自動化 && ./nippou refresh` を実行して再ログインしてください",
-    "timestamp": "2026-06-25T23:04:09+09:00"
+    "timestamp": "2026-06-26T22:19:37+09:00"
   },
   "history": [
+    {
+      "date": "2026-06-26",
+      "status": "failure",
+      "reason": "🔑 Googleセッション切れ — ローカルで `cd ~/Desktop/澤田_日報自動化 && ./nippou refresh` を実行して再ログインしてください",
+      "timestamp": "2026-06-26T22:19:37+09:00"
+    },
     {
       "date": "2026-06-25",
       "status": "failure",
